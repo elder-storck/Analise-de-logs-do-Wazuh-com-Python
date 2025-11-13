@@ -1,0 +1,178 @@
+% ==============================================================================
+% TCC - Nome do Aluno
+% Capítulo 4 - Analise e Resultados
+% ==============================================================================
+\chapter{Análise e Resultados}
+\label{sec-analise}
+
+Neste capítulo são apresentadas as análises e os resultados obtidos a partir dos logs e eventos de segurança coletados. Incluem-se análises quantitativas e qualitativas, bem como a identificação e discussão de possíveis causas para eventos anômalos observados durante o período de monitoramento.
+
+\section{Visão Geral da Coleta}
+
+No período estipulado foram coletados 695.766 logs no total, sendo 156.886 no mês de agosto, 263.903 no mês de setembro e 274.975 no mês de outubro, gerando semanalmente uma coleta média de 57.980 logs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\textwidth]{figuras/logs_por_agentes.png} 
+    \caption{Quantidade de logs por agente}
+    \label{fig:top-agentes}
+\end{figure}
+
+Na Figura~\ref{fig:top-agentes}, observa-se que o agente com maior número de logs foi o \texttt{wazuh}, que em sua maioria representa os logs dos equipamentos de rede, pois, por não possuírem agentes instalados, eles são enviados à \textit{VM} do \textit{Wazuh}, onde são tratados. 
+
+A figura também evidencia que, dos 695.766 logs totais, 531.042 logs são provenientes dos equipamentos de rede ou da própria máquina do \textit{Wazuh}, correspondendo a aproximadamente 76\% do total. Dos logs restantes, 95.712 (13\%) são oriundos das máquinas do \textit{NOC}, enquanto 69.006 (9,9\%) se originaram nos servidores.
+
+%Quantidade total de logs coletados.
+%Período analisado (agosto, setembro e outubro).
+%Volume médio por dia/semana/mês.
+%Breve menção às fontes dos logs (roteadores, servidores, estações, etc.).
+%Observações sobre a qualidade dos dados (erros, duplicações, logs não decodificados).
+
+\section{Classificação dos Eventos de Segurança}
+
+Na Figura~\ref{fig:toplevels}, observa-se que a grande maioria dos logs (aproximadamente 647 mil registros) está concentrada no nível 3 de severidade, indicando eventos de caráter informativo ou de baixa criticidade. Já entre os níveis 4 a 7 de severidade foram totalizados 48.435 logs, aproximadamente 7\% dos registros, associados a alertas moderados, incluindo possíveis anomalias, erros de configuração e falhas de autenticação. Entre os níveis altos, de 8 a 13, estão os alertas críticos, que somaram 232 ocorrências, número baixo em comparação com as outras faixas, representando menos de 1\%. Esse resultado já era esperado, por se tratar de eventos mais críticos, que podem incluir possíveis tentativas de invasão, \textit{exploits} e comportamentos suspeitos.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figuras/logs_por_level.png}
+    \caption{Quantidade de logs por nível}
+    \label{fig:toplevels}
+\end{figure}
+
+A Tabela~\ref{tab:niveis-severidade} apresenta a classificação utilizada para os níveis de severidade dos logs analisados.
+
+\begin{table}[h]
+\centering
+\caption{Classificação dos níveis de severidade dos logs}
+\label{tab:niveis-severidade}
+\begin{tabular}{|c|l|}
+\hline
+\textbf{Nível} & \textbf{Descrição} \\ \hline
+0 -- 3 & Informativos ou de rotina \\ \hline
+4 -- 7 & Alertas moderados (anomalias, erros de configuração, falhas de autenticação) \\ \hline
+8 -- 13 & Alertas críticos (\textit{exploits}, tentativas de invasão, comportamentos suspeitos) \\ \hline
+\end{tabular}
+\end{table}
+
+Essa distribuição de logs é comum em ambientes monitorados de forma contínua, pois os registros não contêm apenas alertas de segurança, mas também informações válidas sobre o funcionamento do sistema, como autenticações legítimas, pequenas atualizações e, no caso de roteadores, dados relacionados à transmissão de pacotes e à operação da rede. Dessa forma, o grande volume de logs não representa necessariamente um aumento no risco à segurança.
+
+Já os registros associados aos níveis mais altos de severidade exigem maior atenção das equipes de segurança, pois podem indicar padrões de ataque ou eventos anômalos que impactam diretamente o ambiente monitorado. Uma abordagem recomendada é a correlação desses registros com os nomes dos agentes e com os horários de ocorrência, de modo a identificar possíveis padrões de comportamento ou falsos positivos.
+
+
+\section{Análise por Regras Acionadas}
+
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=\linewidth]{figuras/logs_por_regras.png}
+%     \caption{Quantidade de logs por regras}
+%     \label{fig:topRegras}
+% \end{figure}
+
+% A Figura~\ref{fig:topRegras} apresenta a quantidade de logs agrupados por tipo de regra acionada. Observa-se que a regra mais acionada é a "Generic event detected from network device", a qual é acionada sempre que o \textit{decoder} não correlaciona o registro com alguma regra mais específica. Por esse motivo, e pelo fato de apresentar um número de ocorrências maior do que todas as outras regras somadas, ela será analisada separadamente a seguir.
+% A Figura~\ref{fig:topRegras} apresenta a quantidade de logs agrupados por tipo de regra acionada. Observa-se que as regras são ranqueadas independente da origem. dessa forma, será analisada as regras fazendo destinção entre os dispositivos de rede e hosts a seguir.
+% A Figura~\ref{fig:topRegras} apresenta a quantidade de logs agrupados por tipo de regra acionada. Observa-se que as regras são ranqueadas independente da origem. dessa forma, será analisada as regras fazendo destinção entre os dispositivos de rede e hosts a seguir.
+Para uma analise mais criteriosa, foram divididas as analises em dois grupos: o primeiro é composto pelos logs que tiveram origem nos dispositivos de rede e o segundo são os logs originados nos descktops e seridores.
+
+\subsection{Analise por Regras dos dispositivos de rede}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figuras/logs_por_regras_nos_roteadores.png}
+    \caption{Quantidade de Regras por Dispositivos de Rede}
+    \label{fig:topRegrasRoteadores}
+\end{figure}
+A Figura~\ref{fig:topRegrasRoteadores} apresenta a quantidade de logs agrupados por tipo de regra acionada nos dispositivos de rede. Observa-se que a regra mais acionada é a "Generic event detected from network device", a qual é acionada sempre que o \textit{decoder} não correlaciona o registro com alguma regra mais específica. Por esse motivo, e pelo fato de apresentar um número de ocorrências maior do que todas as outras regras somadas, ela será analisada separadamente a seguir.
+
+A Figura~\ref{fig:topRegrasGenericas} apresenta as mensagens mais recorrentes dentro da categoria de eventos genéricos identificados pelos dispositivos de rede, que em sua maioria indica a operação normal da rede, indicando sincronização de dados, backups e congestionamento de pacote. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figuras/top10_mensagens_generic_events.png}
+    \caption{Quantidade de mensagens genéricas}
+    \label{fig:topRegrasGenericas}
+\end{figure}
+
+Entre as mensagens genéricas recebidas, duas apresentam maior criticidade: "Recorded command information", com 2.221 registros, e "The SSH user logged out", com 1.142 registros. A primeira indica o registro de execução de comandos administrativos (CLI), que podem representar alterações manuais de configuração, enquanto a segunda informa que o usuário encerrou uma sessão SSH. 
+
+Essas duas mensagens exigem uma auditoria interna para correlacionar informações como o usuário que realizou o acesso, o horário e a frequência. Observa-se também que alguns falsos positivos contribuem para o aumento desses números, como o serviço \textit{Oxidized}, utilizado para o backup automático das configurações de rede. Esse serviço frequentemente realiza conexões SSH nos equipamentos para obter suas configurações, o que gera registros adicionais nos logs.
+
+\subsection{Analise por Regras nos Endpoints}
+
+Na Figura~\ref{fig:topRegrasSemGeneric} é apresentado um gráfico sem os "Generic event detected from network device". Observa-se que, dessa forma, há uma melhor distribuição dos registros com as regras acionadas, evidenciando a eficiência do \textit{Wazuh} em capturar os diferentes eventos de segurança que serão abordados abaixo.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{figuras/logs_por_regras_sem_generica.png}
+    \caption{Quantidade de logs por regras sem o evento genérico}
+    \label{fig:topRegrasSemGeneric}
+\end{figure}
+
+Dois destes registros estão ligados a eventos de caráter mais informativo. Assim podemos correlacionar os registros "Evento genérico de dispositivo Huawei" e "PAM: Login session opened / closed" com eventos genéricos nos equipamentos de rede Huawei e com sessões iniciadas/finalizadas, o que é útil para correlacionar com outros eventos, mas, em termos de severidade, são considerados apenas informativos.
+
+Alguns destes registros precisam ser investigados pelo contexto, como origem, horário e frequência, pois podem ser apenas informativos ou podem estar associados a alguma vulnerabilidade. O "Listened ports status changed (netstat)" indica conexões abertas e fechadas; esse registro pode sinalizar um \textit{exploit} tentando abrir conexões ou apenas o usuário legítimo se conectando à internet ou ao SSH. O "Dpkg half configured / installed / removed" pode ser legítimo, como atualizações, ou indicar alguma instalação sem autorização. O "File added / deleted / modified" requer avaliação do local da alteração; apenas modificações em diretórios críticos podem ser graves.
+
+
+Dois registros merecem atenção constante por estarem relacionados a ataques amplamente difundidos na internet. O "Host-based anomaly detection event (rootcheck)" pode indicar modificação no sistema ou a presença de um \textit{rootkit}, ataque relevante e difícil de detectar. O outro registro de nível moderado é o "User authentication failure", que indica tentativas de login malsucedidas; fatores como serviços mal configurados na rede ou erros legítimos de digitação podem inflar esse número. Entretanto, é necessário correlacionar esse registro com data e hora, verificando se há grande volume em determinado período ou frequência recorrente para determinar se é preocupante ou não.
+
+Os registros que podem ser correlacionados a maiores níveis de severidade são "Integrity checksum changed", "Access denied attempt detected on network device" e "AppArmor DENIED". O primeiro está relacionado à integridade de arquivos, indicando possível alteração em arquivos monitorados, que podem estar adulterados. O segundo diz respeito a tentativas de acesso não autorizadas e deve seguir os mesmos passos de investigação aplicados ao "User authentication failure". Por último, o "AppArmor DENIED" está relacionado ao controle de acesso mandatório; em outras palavras, indica que um processo tentou executar uma ação fora das permissões do seu perfil, como ler o arquivo de senhas do sistema, criar um diretório fora do permitido ou abrir uma conexão de rede não autorizada. Assim, esse registro necessita de investigação mais apurada para verificar suas possíveis causas.
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+
+
+
+
+%Distribuição dos eventos por nível de severidade (0–7), conforme os níveis do Wazuh.
+%Gráfico ou tabela ilustrando essa distribuição.
+%Interpretação dos dados: quais níveis foram mais comuns e o que isso indica sobre o ambiente.
+
+\section{Principais Categorias de Alertas}
+
+Agrupamento dos alertas por tipo (autenticação, rede, integridade de arquivos, vulnerabilidades, etc.).
+
+Tabelas ou gráficos com os tipos de evento mais recorrentes.
+
+Interpretação dos resultados — por exemplo:
+
+Muitos alertas de autenticação → tentativas de acesso indevido.
+
+Falhas de integridade → alterações manuais ou scripts indevidos.
+
+\section{Análise de Vulnerabilidades}
+
+Resultados do módulo de detecção de vulnerabilidades do Wazuh.
+
+Quantidade e criticidade das vulnerabilidades encontradas.
+
+Exemplos (sem expor dados sensíveis).
+
+Interpretação: impacto potencial dessas vulnerabilidades.
+
+\section{Detecção de Comportamentos Anômalos}
+
+Casos em que o Wazuh detectou padrões fora do normal (ex: picos de logins falhos, tráfego incomum, execução de comandos suspeitos).
+
+Análise de logs correlacionados (ex: relação entre autenticação e eventos de rede).
+
+Breve comentário sobre resposta ou ação tomada.
+
+\section{Avaliação da Eficácia do Wazuh}
+
+Desempenho da ferramenta: tempo de detecção, clareza dos alertas, consumo de recursos.
+
+Benefícios percebidos no ambiente do PoP-ES.
+
+Limitações encontradas (ex: necessidade de criar decoders personalizados).
+
+\section{Considerações Finais sobre os Resultados}
+
+Resumo dos principais achados.
+
+Relação com os objetivos do trabalho (confirmando se foram atingidos).
+
+Indicações para trabalhos futuros (ex: integrar com Elastic, SIEM distribuído, resposta automatizada).

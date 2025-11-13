@@ -1,3 +1,6 @@
+# Input - Logs do PoP
+input/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
